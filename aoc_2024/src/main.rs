@@ -8,7 +8,7 @@ fn main() -> io::Result<()> {
     let mut first_list: Vec<i32> = Vec::new();
     let mut second_list: Vec<i32> = Vec::new();
 
-    let file = File::open("/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day1.txt")?;
+    let file = File::open("/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day1_part2.txt")?;
     let reader = BufReader::new(file);
 
     // Iterate through lines
@@ -57,6 +57,32 @@ fn main() -> io::Result<()> {
     }
    
     println!("puzzle count: {:?}", puzzle_count);
-
+    part_two(first_list, second_list);
     Ok(())
+}
+
+fn part_two(list1: Vec<i32>, list2: Vec<i32>) {
+    let mut first_count = 0;
+    let mut total = 0;
+    // loop through each index in the first array
+    while first_count < list1.len() {
+        // check each number in the second array
+        let mut second_count = 0;
+        let mut number = list1[first_count];
+        let mut multiplier = 0;
+        while second_count < list2.len() {
+            // check if the current index of first array matches current index of second array
+            if list1[first_count] == list2[second_count] {
+                // add 1 to multiplier
+                multiplier += 1;
+                second_count += 1;
+            } else {
+                second_count += 1;
+            }
+        }
+        total += multiplier * number;
+        second_count = 0;
+        first_count += 1;
+    }
+    println!("Total: {}", total);
 }
