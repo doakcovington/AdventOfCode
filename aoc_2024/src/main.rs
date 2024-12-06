@@ -4,11 +4,11 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 
 fn main() -> io::Result<()> {
-    // Create two empty vecs for input lists
-    let mut first_list: Vec<i32> = Vec::new();
-    let mut second_list: Vec<i32> = Vec::new();
+    // // Create two empty vecs for input lists
+    // let mut first_list: Vec<i32> = Vec::new();
+    // let mut second_list: Vec<i32> = Vec::new();
 
-    let file = File::open("/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day1_part2.txt")?;
+    let file = File::open("/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day2_part1.txt")?;
     let reader = BufReader::new(file);
 
     // Iterate through lines
@@ -55,9 +55,6 @@ fn main() -> io::Result<()> {
         total = 0;
         count += 1;
     }
-   
-    println!("puzzle count: {:?}", puzzle_count);
-    part_two(first_list, second_list);
     Ok(())
 }
 
