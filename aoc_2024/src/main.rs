@@ -2,6 +2,8 @@
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use regex::Regex;
+use std::any::{Any, TypeId};
 
 // fn main() -> io::Result<()> {
 //     // // Create two empty vecs for input lists
@@ -84,67 +86,60 @@ use std::io::{self, BufRead, BufReader};
 //     println!("Total: {}", total);
 // }
 
-fn main() {
-    let test_sequences: Vec<Vec<i32>> = vec![
-        vec![7, 6, 4, 2, 1],     // One larger jump allowed
-        vec![1, 2, 7, 8, 9],     // One non-increasing number
-        vec![9, 7, 6, 2, 1],     // Multiple violations
-        vec![1, 3, 2, 4, 5],     // Perfect increasing sequence
-        vec![8, 6, 4, 4, 1],     // Decreasing sequence
-        vec![1, 3, 6, 7, 9],     // Near-decreasing with one violation
-    ];
+fn find_mul_instances(filename: &str) -> Result<Vec<(usize, String, f64, f64)>, Box<dyn std::error::Error>> {
+    // Create a regex to match mul(x,y) where x and y are numbers
+    // This handles integers and floating-point numbers
+    let mul_regex = Regex::new(r"mul\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\)")?;
+    
+    let file = File::open(filename)?;
+    let reader = BufReader::new(file);
 
-    let mut safe_count = 0;
+    // Vector to store matches: (line number, full match, x value, y value)
+    let mut matches = Vec::new();
 
-    for sequence in test_sequences {
-        println!("\nOriginal Sequence: {:?}", sequence);
-        let processed_sequence = process_sequence(sequence);
-        println!("Final Sequence: {:?}", processed_sequence);
-        println!("---");
+    // Iterate through lines with their line numbers
+    for (line_number, line_result) in reader.lines().enumerate() {
+        let line = line_result?;
+        
+        // Find all matches in the line
+        for capture in mul_regex.captures_iter(&line) {
+            // Parse the x and y values
+            let x: f64 = capture[1].parse()?;
+            let y: f64 = capture[2].parse()?;
+            
+            matches.push((
+                line_number + 1,  // Line number (1-indexed)
+                line.clone(),     // Full line containing the match
+                x,                // x value
+                y                 // y value
+            ));
+        }
     }
 
-    // More complex example with repeated processing
-    println!("\nRepeated Processing Example:");
-    let mut complex_sequence = vec![1, 2, 4, 7, 10, 8];
-    println!("Starting sequence: {:?}", complex_sequence);
-
-    while complex_sequence.windows(2)
-        .any(|window| i32::abs(window[1] - window[0]) > 3 || window[1] <= window[0]) 
-    {
-        complex_sequence = process_sequence(complex_sequence);
-    }
-
-    println!("Final constrained sequence: {:?}", complex_sequence);
+    Ok(matches)
 }
 
-fn process_sequence(mut sequence: Vec<i32>) -> Vec<i32> {
-    // Clone the original sequence for comparison
-    let original_sequence = sequence.clone();
-
-    // Find the first index that breaks the constraints
-    let break_index = sequence.windows(2)
-        .enumerate()
-        .find_map(|(index, window)| {
-            let difference = i32::abs(window[1] - window[0]);
-            
-            // Check conditions:
-            // 1. Not increasing or decreasing
-            // 2. Difference greater than 3
-            if difference > 3 || 
-               (window[1] <= window[0]) 
-            {
-                Some(index + 1) // Return the index to remove
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let filename = "/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day3_part1.txt";
+    let mut result: f64 = 0.0;
+    match find_mul_instances(filename) {
+        Ok(matches) => {
+            if matches.is_empty() {
+                println!("No mul(x,y) instances found in the file.");
             } else {
-                None // Continue if no constraint is broken
+                println!("Found {} mul(x,y) instances:", matches.len());
+                for (line_num, full_line, x, y) in matches {
+                    println!("Line {}: {} | Parsed: mul({}, {})", 
+                             line_num, full_line, x, y);
+                    println!("     Calculated result: {}", x * y);
+                    result += x * y;
+                }
             }
-        });
-
-    // Remove the problematic index if found
-    if let Some(index) = break_index {
-        sequence.remove(index);
-        println!("Removed index {} from {:?}", index, original_sequence);
-        println!("New sequence: {:?}", sequence);
+        }
+        Err(e) => {
+            eprintln!("Error searching file: {}", e);
+        }
     }
-
-    sequence
+    println!("Result {}", result);
+    Ok(())
 }
