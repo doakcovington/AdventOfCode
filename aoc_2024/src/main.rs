@@ -1,9 +1,9 @@
 // WDGTR
 
-use std::fs::File;
-use std::io::{self, BufRead, BufReader};
-use regex::Regex;
-use std::any::{Any, TypeId};
+// use std::fs::File;
+// use std::io::{self, BufRead, BufReader};
+// use regex::Regex;
+// use std::any::{Any, TypeId};
 
 // fn main() -> io::Result<()> {
 //     // // Create two empty vecs for input lists
@@ -86,60 +86,60 @@ use std::any::{Any, TypeId};
 //     println!("Total: {}", total);
 // }
 
-fn find_mul_instances(filename: &str) -> Result<Vec<(usize, String, f64, f64)>, Box<dyn std::error::Error>> {
-    // Create a regex to match mul(x,y) where x and y are numbers
-    // This handles integers and floating-point numbers
-    let mul_regex = Regex::new(r"mul\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\)")?;
+// fn find_mul_instances(filename: &str) -> Result<Vec<(usize, String, f64, f64)>, Box<dyn std::error::Error>> {
+//     // Create a regex to match mul(x,y) where x and y are numbers
+//     // This handles integers and floating-point numbers
+//     let mul_regex = Regex::new(r"mul\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\)")?;
     
-    let file = File::open(filename)?;
-    let reader = BufReader::new(file);
+//     let file = File::open(filename)?;
+//     let reader = BufReader::new(file);
 
-    // Vector to store matches: (line number, full match, x value, y value)
-    let mut matches = Vec::new();
+//     // Vector to store matches: (line number, full match, x value, y value)
+//     let mut matches = Vec::new();
 
-    // Iterate through lines with their line numbers
-    for (line_number, line_result) in reader.lines().enumerate() {
-        let line = line_result?;
+//     // Iterate through lines with their line numbers
+//     for (line_number, line_result) in reader.lines().enumerate() {
+//         let line = line_result?;
         
-        // Find all matches in the line
-        for capture in mul_regex.captures_iter(&line) {
-            // Parse the x and y values
-            let x: f64 = capture[1].parse()?;
-            let y: f64 = capture[2].parse()?;
+//         // Find all matches in the line
+//         for capture in mul_regex.captures_iter(&line) {
+//             // Parse the x and y values
+//             let x: f64 = capture[1].parse()?;
+//             let y: f64 = capture[2].parse()?;
             
-            matches.push((
-                line_number + 1,  // Line number (1-indexed)
-                line.clone(),     // Full line containing the match
-                x,                // x value
-                y                 // y value
-            ));
-        }
-    }
+//             matches.push((
+//                 line_number + 1,  // Line number (1-indexed)
+//                 line.clone(),     // Full line containing the match
+//                 x,                // x value
+//                 y                 // y value
+//             ));
+//         }
+//     }
 
-    Ok(matches)
-}
+//     Ok(matches)
+// }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let filename = "/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day3_part1.txt";
-    let mut result: f64 = 0.0;
-    match find_mul_instances(filename) {
-        Ok(matches) => {
-            if matches.is_empty() {
-                println!("No mul(x,y) instances found in the file.");
-            } else {
-                println!("Found {} mul(x,y) instances:", matches.len());
-                for (line_num, full_line, x, y) in matches {
-                    println!("Line {}: {} | Parsed: mul({}, {})", 
-                             line_num, full_line, x, y);
-                    println!("     Calculated result: {}", x * y);
-                    result += x * y;
-                }
-            }
-        }
-        Err(e) => {
-            eprintln!("Error searching file: {}", e);
-        }
-    }
-    println!("Result {}", result);
-    Ok(())
-}
+// fn main() -> Result<(), Box<dyn std::error::Error>> {
+//     let filename = "/Users/doak/Code/AdventOfCode/aoc_2024/puzzle_inputs/day3_part1.txt";
+//     let mut result: f64 = 0.0;
+//     match find_mul_instances(filename) {
+//         Ok(matches) => {
+//             if matches.is_empty() {
+//                 println!("No mul(x,y) instances found in the file.");
+//             } else {
+//                 println!("Found {} mul(x,y) instances:", matches.len());
+//                 for (line_num, full_line, x, y) in matches {
+//                     println!("Line {}: {} | Parsed: mul({}, {})", 
+//                              line_num, full_line, x, y);
+//                     println!("     Calculated result: {}", x * y);
+//                     result += x * y;
+//                 }
+//             }
+//         }
+//         Err(e) => {
+//             eprintln!("Error searching file: {}", e);
+//         }
+//     }
+//     println!("Result {}", result);
+//     Ok(())
+// }
